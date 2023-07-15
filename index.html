@@ -7,7 +7,12 @@
     </head>
     <body>
         <div class="card-table"></div>
-        <div class="userIo"><button>click me</button> </div>
-        <script src="./fill_table.js"></script>
+        <div class="userIo">
+            <button onclick='change_state_to_table_change()'>change table cards</button> 
+            <button onclick='change_state_to_player_hand_change()'>change player cards</button> 
+            <div class="table_cards"></div>
+            <div class="player_cards"></div>
+        </div>
+        <script src="./handle_state.js"></script>
     </body>
 </html>

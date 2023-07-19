@@ -1,10 +1,6 @@
-// const { promisify } = require('util');
-// const exec = promisify(require('child_process').exec)
-
 var table_cards = ['ka', 'sa', 'pa']
 var player_cards = ['k2', 's2']
 var excluded_cards = []
-
 
 const card_faces = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'j', 'q', 'k', 'a']
 const card_colors = 'kspl'
@@ -27,7 +23,7 @@ function change_state_to_table_change() {
     GLOBAL_STATE = inputState.change_table
 }
 
-function change_state_to_player_hand_change() {
+function change_state_to_player_change() {
     GLOBAL_STATE = inputState.change_player_hand
 }
 
@@ -103,9 +99,6 @@ function init_ui() {
     PLAYER_CARDS_ROW.insertBefore(btn2, PLAYER_CARDS_ROW.firstChild)
     excluded_table.appendChild(EXCLUDED_CARDS_ROW)
     EXCLUDED_CARDS_ROW.insertBefore(btn3, EXCLUDED_CARDS_ROW.firstChild)
-
-    btn = document.querySelector("div.calculation_results>button")
-    btn.onclick = on_calculate_click
 }
 
 function remove_card_ui(element, card){
@@ -144,6 +137,7 @@ function add_card(card) {
 function remove_card(card) {
     index_table = table_cards.indexOf(card);
     index_player = player_cards.indexOf(card);
+    index_excluded = excluded_cards.indexOf(card);
     if (index_table != -1) {
         table_cards.splice(index_table, 1)
         remove_card_ui(TABLE_CARDS_ROW, card)
@@ -152,6 +146,11 @@ function remove_card(card) {
     if (index_player != -1) {
         player_cards.splice(index_player, 1)
         remove_card_ui(PLAYER_CARDS_ROW, card)
+        return 1
+    }
+    if (index_excluded != -1) {
+        excluded_cards.splice(index_excluded, 1)
+        remove_card_ui(EXCLUDED_CARDS_ROW, card)
         return 1
     }
     return 0
@@ -166,26 +165,4 @@ function toggle_card(card) {
 
 
 init_ui()
-
-function make_json_msg(){
-    result = {}
-    result['table_cards'] = table_cards
-    result['player_cards'] = player_cards
-    result['excluded_cards'] = excluded_cards
-    result_str = JSON.stringify(result)
-    return result_str
-}
-
-
-const ENGINE_CALL_STRING = args => `python3 engine/main.py ${args}`
-
-async function on_calculate_click(){
-    json_str = make_json_msg();
-    engine_result = await exec(ENGINE_CALL_STRING(json_str)).stdout
-
-    display_target = document.querySelector("div.calculation_results")
-    display_object = document.createElement("p")
-    display_object.textContent = engine_result.trim()
-    display_target.appendChild(display_object)
-}
 

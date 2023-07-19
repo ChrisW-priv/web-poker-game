@@ -1,14 +1,20 @@
+// const { promisify } = require('util');
+// const exec = promisify(require('child_process').exec)
+
 var table_cards = ['ka', 'sa', 'pa']
 var player_cards = ['k2', 's2']
+var excluded_cards = []
+
 
 const card_faces = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'j', 'q', 'k', 'a']
 const card_colors = 'kspl'
 const card_names = [...card_colors].map((color) => card_faces.map(face => color + face))
-var TABLE_CARDS_ROW, PLAYER_CARDS_ROW;
+var TABLE_CARDS_ROW, PLAYER_CARDS_ROW, EXCLUDED_CARDS_ROW;
 
 class inputState {
     static change_table = new inputState("change_table")
     static change_player_hand = new inputState("change_player_hand")
+    static change_excluded = new inputState("change_excluded")
 
     constructor(name) {
         this.name = name
@@ -25,6 +31,9 @@ function change_state_to_player_hand_change() {
     GLOBAL_STATE = inputState.change_player_hand
 }
 
+function change_state_to_excluded_change() {
+    GLOBAL_STATE = inputState.change_excluded
+}
 
 function create_image_element_with_properties(card_name) {
     src_element = document.createElement("img")
@@ -65,14 +74,38 @@ function fill_base_table() {
     return table
 }
 
+function create_statechange_button(function_name, text){
+    div = document.createElement("div")
+    div.setAttribute("class", "td")
+    btn = document.createElement("button")
+    btn.setAttribute("onclick", function_name)
+    btn.textContent = text
+    div.appendChild(btn)
+    return div
+}
+
+
 function init_ui() {
     fill_base_table()
     TABLE_CARDS_ROW = create_row_of_cards(table_cards, "table-cards")
     PLAYER_CARDS_ROW = create_row_of_cards(player_cards, "player-cards")
+    EXCLUDED_CARDS_ROW = create_row_of_cards(excluded_cards, "excluded-cards")
     table_table = document.querySelector("div.table_cards")
     player_table = document.querySelector("div.player_cards")
+    excluded_table = document.querySelector("div.excluded_cards")
+    btn1 = create_statechange_button("change_state_to_table_change()", "add table cards")
+    btn2 = create_statechange_button("change_state_to_player_change()", "add player cards")
+    btn3 = create_statechange_button("change_state_to_excluded_change()", "add excluded cards")
+
     table_table.appendChild(TABLE_CARDS_ROW)
+    TABLE_CARDS_ROW.insertBefore(btn1, TABLE_CARDS_ROW.firstChild)
     player_table.appendChild(PLAYER_CARDS_ROW)
+    PLAYER_CARDS_ROW.insertBefore(btn2, PLAYER_CARDS_ROW.firstChild)
+    excluded_table.appendChild(EXCLUDED_CARDS_ROW)
+    EXCLUDED_CARDS_ROW.insertBefore(btn3, EXCLUDED_CARDS_ROW.firstChild)
+
+    btn = document.querySelector("div.calculation_results>button")
+    btn.onclick = on_calculate_click
 }
 
 function remove_card_ui(element, card){
@@ -100,6 +133,11 @@ function add_card(card) {
         add_card_ui(PLAYER_CARDS_ROW, card)
         return 1
     }
+    if (GLOBAL_STATE == inputState.change_excluded) {
+        excluded_cards.push(card);
+        add_card_ui(EXCLUDED_CARDS_ROW, card)
+        return 1
+    }
     return 0
 }
 
@@ -120,7 +158,6 @@ function remove_card(card) {
 }
 
 function toggle_card(card) {
-    console.log("detected click on card:", card)
     card_removed = remove_card(card)
     if (!card_removed) {
         add_card(card);
@@ -129,3 +166,26 @@ function toggle_card(card) {
 
 
 init_ui()
+
+function make_json_msg(){
+    result = {}
+    result['table_cards'] = table_cards
+    result['player_cards'] = player_cards
+    result['excluded_cards'] = excluded_cards
+    result_str = JSON.stringify(result)
+    return result_str
+}
+
+
+const ENGINE_CALL_STRING = args => `python3 engine/main.py ${args}`
+
+async function on_calculate_click(){
+    json_str = make_json_msg();
+    engine_result = await exec(ENGINE_CALL_STRING(json_str)).stdout
+
+    display_target = document.querySelector("div.calculation_results")
+    display_object = document.createElement("p")
+    display_object.textContent = engine_result.trim()
+    display_target.appendChild(display_object)
+}
+

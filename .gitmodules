@@ -1,0 +1,3 @@
+[submodule "our_engine"]
+	path = our_engine
+	url = https://github.com/ChrisW-priv/poker_analysis.git

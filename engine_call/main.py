@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_restful import Api, Resource, reqparse
 from flask_cors import CORS
+import engine.poker_analysis as engine
 
 app = Flask(__name__)
 CORS(app)
@@ -18,9 +19,14 @@ engine_arguments.add_argument("excluded_cards", type=str, action='append',
 class PokerEngineApi(Resource):
     def post(self):
         args = engine_arguments.parse_args()
-        result = f"recieved request with args: {args}"
-        print(result)
-        return "30"
+        community_cards = args["table_cards"]
+        player_cards = args["player_cards"]
+        community_cards = set(card[::-1] for card in community_cards)
+        player_cards = set(card[::-1] for card in player_cards)
+        engine.set_table_as(community_cards)
+        engine.update_hand(player_cards)
+        result = engine.calculate_position()
+        return result
 
 api.add_resource(PokerEngineApi, "/poker_engine")
 

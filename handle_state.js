@@ -2,7 +2,7 @@ var table_cards = ['ka', 'sa', 'pa']
 var player_cards = ['k2', 's2']
 var excluded_cards = []
 
-const card_faces = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'j', 'q', 'k', 'a']
+const card_faces = ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a']
 const card_colors = 'kspl'
 const card_names = [...card_colors].map((color) => card_faces.map(face => color + face))
 var TABLE_CARDS_ROW, PLAYER_CARDS_ROW, EXCLUDED_CARDS_ROW;

@@ -1,7 +1,7 @@
 function make_json_msg() {
     var result = {}
     result['table_cards'] = table_cards
-    result['player_cards'] = player_cards
+    result['whole_cards'] = player_cards
     result['excluded_cards'] = excluded_cards
     return JSON.stringify(result)
 }

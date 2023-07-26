@@ -2,9 +2,9 @@ var table_cards = ['ka', 'sa', 'pa']
 var player_cards = ['k2', 's2']
 var excluded_cards = []
 
-const card_faces = ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a']
-const card_colors = 'kspl'
-const card_names = [...card_colors].map((color) => card_faces.map(face => color + face))
+const card_ranks = ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a']
+const card_suites = 'kspl'
+const card_names = [...card_suites].map((suite) => card_ranks.map(rank => suite + rank))
 var TABLE_CARDS_ROW, PLAYER_CARDS_ROW, EXCLUDED_CARDS_ROW;
 
 class inputState {

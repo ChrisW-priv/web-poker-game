@@ -18,7 +18,7 @@ engine_arguments.add_argument("excluded_cards", type=str, action='append',
 
 def translate_suite(suite:str):
     our_suite = "kspl"
-    engine_suite = ('c', 'd', 'h', 's')
+    engine_suite = ('c', 'h', 's', 'd')
     return engine_suite[our_suite.index(suite)]
 
 def translate_card(card:str):
